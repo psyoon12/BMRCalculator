@@ -1,0 +1,136 @@
+/**
+ * @author Pui San Yoon
+ * @since 02-23-2020
+ * @version 1.0 
+ * Description: Calculations of patient's BMR and TEE. This program is designed 
+ * interacts with a nurse but may be used by clients as well.
+ * Comment: For this assignment, I have included a total of five methods. The main 
+ * method has a while loop. The while loop check if data is valid before 
+ * calculating the BMR and the TEE. If the condition is true, then the statement 
+ * inside the while loop will execute. Two of the methods are for converting units 
+ * and the other two methods are for calculating the BMR and the TEE. In the BMR
+ * and the TEE calculators, I have included the if and if-else statements. 
+ * When we need to execute a set of statements based on a condition, then we need 
+ * to use the if or if-else statements. In this case, we have two printed statements
+ * in the bmrCalculator, but only one print statement executes at a time based 
+ * on the input. I've also included an error trapping to ensure that a number lies 
+ * in between my limits. Within the error trapping, I included a while loop that
+ * repeatedly asks for the correct values if an incorrect value is entered. 
+ */
+package assignment2;
+
+import java.io.PrintStream;
+import java.util.Scanner;
+
+public class Assignment2 {
+
+    public static void main(String[] args) throws Exception {
+        char gender;
+        int age;
+        int feet, inches;
+        double weight;
+        int activityLevel;
+
+        PrintStream file = new PrintStream("BMR.txt");
+        Scanner scan = new Scanner(System.in);
+
+        System.out.println("BMR/TEE Calculator");
+
+        System.out.println("Enter the patient's gender");
+        gender = scan.next().charAt(0);
+        while (gender != 'X') {
+
+            System.out.println("Enter the patient's age");
+            age = scan.nextInt();
+
+            System.out.println("Enter the patient's height in feet and inches");
+            feet = scan.nextInt();
+            inches = scan.nextInt();
+
+            System.out.println("Enter the patient's weight in pounds");
+            int limit1 = 0;
+            int limit2 = 500;
+            weight = scan.nextDouble();
+            while (weight < limit1 || weight > limit2) {
+                System.out.println("Out of limits. Try again!");
+                weight = scan.nextDouble();
+            }
+
+            System.out.println("Enter the patient activity level (1 for sedentary, 2 for"
+                    + " active, 3 for vigorous)");
+            activityLevel = scan.nextInt();
+
+            System.out.printf("Gender: %s\n", gender);
+            System.out.printf("Age: %d\n", age);
+            System.out.printf("Height: %d feet %d inches\n", feet, inches);
+            System.out.printf("Weight: %.0f pounds\n", weight);
+            System.out.printf("Activity Level: %d\n\n", activityLevel);
+
+            double bmr = bmrCalculator(gender, age, convertToCm(feet, inches),
+                    convertToKg(weight));
+
+            System.out.printf("Your BMR is %.1f calories/day.\n", bmr);
+            System.out.printf("Your TEE is %.1f calories/day.\n",
+                    teeCalculator(bmr, activityLevel));
+
+            file.printf("BMR/TEE Calculator\n");
+
+            file.printf("Gender: %s\n", gender);
+            file.printf("Age: %d\n", age);
+            file.printf("Height: %d feet %d inches\n", feet, inches);
+            file.printf("Weight: %.0f pounds\n", weight);
+            file.printf("Activity Level: %d\n\n", activityLevel);
+
+            file.printf("Your BMR is %.1f calories/day.\n", bmr);
+            file.printf("Your TEE is %.1f calories/day.\n\n", teeCalculator(bmr,
+                    activityLevel));
+
+            System.out.println("Enter X to stop\n");
+
+            System.out.println("Enter the patient's gender");
+            gender = scan.next().charAt(0);
+
+        }
+
+        file.close();
+
+    }
+
+//Converts height to centimeters
+    public static double convertToCm(int feet, int inches) {
+        int totalInt = feet * 12 + inches;
+        return totalInt * 2.54;
+    }
+
+//Converts weight to Kilograms
+    public static double convertToKg(double weight) {
+        double totalInt = weight / 2.205;
+        return totalInt;
+    }
+
+//Calculates the BMI
+    public static double bmrCalculator(char gender, int age, double cm, double Kg) {
+        double bmr = 0;
+        if (gender == 'M') {
+            bmr = (10 * Kg) + (6.25 * cm) - (5 * age) + 5;
+        } else if (gender == 'F') {
+            bmr = (10 * Kg) + (6.25 * cm) - (5 * age) - 161;
+        }
+        return bmr;
+    }
+
+//Calculates the TEE
+    public static double teeCalculator(double bmr, int activityLevel) {
+
+        double tee = 0;
+        if (activityLevel == 1) {
+            tee = bmr * 1.53;
+        } else if (activityLevel == 2) {
+            tee = bmr * 1.76;
+        } else if (activityLevel == 3) {
+            tee = bmr * 2.25;
+        }
+        return tee;
+    }
+
+}
